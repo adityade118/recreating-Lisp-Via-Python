@@ -4,3 +4,5 @@ tasks-
 1. basic operations
 2. nested operations
 3. storing values in variables
+4. adding if conditionals
+5. while loops
