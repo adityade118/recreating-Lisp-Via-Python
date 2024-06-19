@@ -88,15 +88,11 @@ class Operation:
 
         # while loop
         if operator == "while":
-            out = []
-            while True:
-                if Value(operation_List[1]).value:
-                    out += [Value(operation_List[2]).value]
-                else:
-                    break
-            for item in out:
-                print(item)
-            return 0
+            out = None
+            while Value(operation_List[1]).value:
+                out = Value(operation_List[2]).value
+                
+            return out
 
 
 class Value:
