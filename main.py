@@ -83,14 +83,11 @@ class Operation:
 
         # while loop
         if operator == "while":
-            out = []
             while True:
                 if Value(operation_List[1]).value:
                     Operation(operation_List[2]).eval()
                 else:
                     break
-            for item in out:
-                print(item)
             return 0
 
 
