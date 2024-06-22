@@ -87,12 +87,7 @@ class Operation:
 
         # while loop
         if operator == "while":
-            while True:
-                if Value(operation_List[1]).value:
-                    Operation(operation_List[2]).eval()
-                else:
-                    break
-            return 0
+
 
         # function
 
