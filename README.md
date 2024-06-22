@@ -7,6 +7,4 @@ tasks done-
 3. storing values in variables
 4. adding if conditionals
 5. while loops
-
-pending-
-1. named fncn
+6. named fncn
