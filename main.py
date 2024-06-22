@@ -1,4 +1,8 @@
-memory = {}
+globalMemory = {}
+
+fncnDefined = {}
+
+localMemory = {}
 
 
 def convertToList(operator_String):
@@ -65,8 +69,8 @@ class Operation:
 
         # memory operations
         if operator == "set":
-            memory[operation_List[1]] = Value(operation_List[2]).value
-            return memory[operation_List[1]]  # issue 3 solved
+            globalMemory[operation_List[1]] = Value(operation_List[2]).value
+            return globalMemory[operation_List[1]]  # issue 3 solved
 
         # conditional operations
         if operator == "if":
@@ -90,14 +94,33 @@ class Operation:
                     break
             return 0
 
+        # function
+
+        # function definition
+        if operator == "defun":
+            funcsName = operation_List[1]
+            arg = operation_List[2]
+            fnc_body = operation_List[3]
+            fncnDefined[funcsName] = [arg, fnc_body]
+            return fncnDefined[funcsName]
+
+        # function call
+        if operator in fncnDefined.keys():
+            parameters = convertToList(fncnDefined[operator][0])
+            for i in range(len(parameters)):
+                localMemory[parameters[i]] = Value(operation_List[i + 1]).value
+
+            return Operation(fncnDefined[operator][1]).eval()
+            # localMemory.clear()
+
 
 class Value:
     def __init__(self, string):
         if string[0] == "(" and string[-1] == ")":
             string = Operation(string)
             self.value = string.eval()
-        elif string in memory.keys():
-            self.value = memory[string]
+        elif string in {**globalMemory, **localMemory}.keys():
+            self.value = {**globalMemory, **localMemory}[string]
         else:
             self.value = int(string)
 
