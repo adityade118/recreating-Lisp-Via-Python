@@ -1,4 +1,8 @@
-memory = {}
+globalMemory = {}
+
+fncnDefined = {}
+
+localMemory = {}
 
 
 def convertToList(operator_String):
@@ -10,22 +14,17 @@ def convertToList(operator_String):
     while i < len(input_evaluable):
         ch = input_evaluable[i]
         if ch == "(":
-            countBraC = 0
-            string = ""
-            while ch != ")":
+            braceOpen: int = -1  # just to know when we invoke the while loop, else double count the first brace
+            while braceOpen != 0:
+                if braceOpen == -1:
+                    braceOpen = 0  # to start the while loop with braceOpen = 0
                 ch = input_evaluable[i]
                 string += ch
-                i += 1
                 if ch == "(":
-                    countBraC += 1
-            if countBraC == 1:
-                input_str_list.append(string)
-                string = ""
+                    braceOpen += 1
+                elif ch == ")":
+                    braceOpen -= 1
                 i += 1
-            else:
-                while countBraC > 2:
-                    string += ")"
-                    countBraC -= 1
 
         elif ch == " ":
             input_str_list.append(string)
@@ -69,9 +68,9 @@ class Operation:
             return Value(operation_List[1]).value or Value(operation_List[2]).value
 
         # memory operations
-        if operator == "setq":
-            memory[operation_List[1]] = Value(operation_List[2]).value
-            return memory[operation_List[1]]  # issue 3 solved
+        if operator == "set":
+            globalMemory[operation_List[1]] = Value(operation_List[2]).value
+            return globalMemory[operation_List[1]]  # issue 3 solved
 
         # conditional operations
         if operator == "if":
@@ -88,11 +87,26 @@ class Operation:
 
         # while loop
         if operator == "while":
-            out = None
-            while Value(operation_List[1]).value:
-                out = Value(operation_List[2]).value
-                
-            return out
+
+
+        # function
+
+        # function definition
+        if operator == "defun":
+            funcsName = operation_List[1]
+            arg = operation_List[2]
+            fnc_body = operation_List[3]
+            fncnDefined[funcsName] = [arg, fnc_body]
+            return fncnDefined[funcsName]
+
+        # function call
+        if operator in fncnDefined.keys():
+            parameters = convertToList(fncnDefined[operator][0])
+            for i in range(len(parameters)):
+                localMemory[parameters[i]] = Value(operation_List[i + 1]).value
+
+            return Operation(fncnDefined[operator][1]).eval()
+            # localMemory.clear()
 
 
 class Value:
@@ -100,8 +114,8 @@ class Value:
         if string[0] == "(" and string[-1] == ")":
             string = Operation(string)
             self.value = string.eval()
-        elif string in memory.keys():
-            self.value = memory[string]
+        elif string in {**globalMemory, **localMemory}.keys():
+            self.value = {**globalMemory, **localMemory}[string]
         else:
             self.value = int(string)
 
