@@ -42,7 +42,6 @@ class Operation:
     def __init__(self, string):
         self.string = string
 
-    @property
     def eval(self):
         operation_List = convertToList(self.string)
         operator = operation_List[0]
