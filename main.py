@@ -1,8 +1,8 @@
-globalMemory = {}
+Memory = {}
 
 fncnDefined = {}
 
-localMemory = {}
+stack = []
 
 
 def convertToList(operator_String):
@@ -42,6 +42,7 @@ class Operation:
     def __init__(self, string):
         self.string = string
 
+    @property
     def eval(self):
         operation_List = convertToList(self.string)
         operator = operation_List[0]
@@ -69,8 +70,8 @@ class Operation:
 
         # memory operations
         if operator == "set":
-            globalMemory[operation_List[1]] = Value(operation_List[2]).value
-            return globalMemory[operation_List[1]]  # issue 3 solved
+            Memory[operation_List[1]] = Value(operation_List[2]).value
+            return Memory[operation_List[1]]  # issue 3 solved
 
         # conditional operations
         if operator == "if":
@@ -87,7 +88,12 @@ class Operation:
 
         # while loop
         if operator == "while":
-
+            while True:
+                if Value(operation_List[1]).value:
+                    Operation(operation_List[2]).eval
+                else:
+                    break
+            return 0
 
         # function
 
@@ -101,21 +107,24 @@ class Operation:
 
         # function call
         if operator in fncnDefined.keys():
+            stack.append(Memory.copy())
             parameters = convertToList(fncnDefined[operator][0])
             for i in range(len(parameters)):
-                localMemory[parameters[i]] = Value(operation_List[i + 1]).value
+                Memory[parameters[i]] = Value(operation_List[i + 1]).value
 
-            return Operation(fncnDefined[operator][1]).eval()
-            # localMemory.clear()
+            Memory.clear()
+            Mem = stack.pop()
+            Memory.update(Mem)
+            return Operation(fncnDefined[operator][1]).eval
 
 
 class Value:
     def __init__(self, string):
         if string[0] == "(" and string[-1] == ")":
             string = Operation(string)
-            self.value = string.eval()
-        elif string in {**globalMemory, **localMemory}.keys():
-            self.value = {**globalMemory, **localMemory}[string]
+            self.value = string.eval
+        elif string in Memory.keys():
+            self.value = Memory[string]
         else:
             self.value = int(string)
 
@@ -124,4 +133,4 @@ while True:
     command = input("> ")
     if command == "exit":
         break
-    print(Operation(command).eval())
+    print(Operation(command).eval)
