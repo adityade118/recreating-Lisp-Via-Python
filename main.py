@@ -89,7 +89,8 @@ class Operation:
         if operator == "while":
             while True:
                 if Value(operation_List[1]).value:
-                    Operation(operation_List[2]).eval
+                    for i in range(2, len(operation_List)):
+                        Operation(operation_List[i]).eval()
                 else:
                     break
             return 0
@@ -100,7 +101,11 @@ class Operation:
         if operator == "defun":
             funcsName = operation_List[1]
             arg = operation_List[2]
-            fnc_body = operation_List[3]
+            i = 3
+            fnc_body = []
+            while i < len(operation_List):
+                fnc_body += [operation_List[i]]
+                i += 1
             fncnDefined[funcsName] = [arg, fnc_body]
             return fncnDefined[funcsName]
 
@@ -111,10 +116,14 @@ class Operation:
             for i in range(len(parameters)):
                 Memory[parameters[i]] = Value(operation_List[i + 1]).value
 
+            for i in range(len(fncnDefined[operator][1]) - 1):
+                Operation(fncnDefined[operator][1][i]).eval()
+
+            out = Operation(fncnDefined[operator][1][-1]).eval()
             Memory.clear()
             Mem = stack.pop()
             Memory.update(Mem)
-            return Operation(fncnDefined[operator][1]).eval
+            return out
 
 
 class Value:
@@ -132,4 +141,4 @@ while True:
     command = input("> ")
     if command == "exit":
         break
-    print(Operation(command).eval)
+    print(Operation(command).eval())
