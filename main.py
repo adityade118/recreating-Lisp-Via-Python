@@ -86,6 +86,14 @@ class Operation:
                     return Value(operation_List[3]).value
 
         # while loop
+        '''
+        > (set a 1)
+        1
+        > (set b 1)
+        1
+        > (while (< a 9) (set b (* b a)) (set a (+ 1 a)))
+        0
+       '''
         if operator == "while":
             while True:
                 if Value(operation_List[1]).value:
@@ -130,7 +138,7 @@ class Value:
     def __init__(self, string):
         if string[0] == "(" and string[-1] == ")":
             string = Operation(string)
-            self.value = string.eval
+            self.value = string.eval()
         elif string in Memory.keys():
             self.value = Memory[string]
         else:
